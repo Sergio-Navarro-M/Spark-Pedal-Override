@@ -1,4 +1,3 @@
-//#include "heltec.h"
 #include "SSD1306Wire.h" // https://github.com/ThingPulse/esp8266-oled-ssd1306
 
 #include "SparkClass.h"
@@ -38,7 +37,7 @@ SparkClass sc_getserial;
 SparkPreset preset;
 
 // ------------------------------------------------------------------------------------------
-// Display routintes
+// Display routines
 
 // Display vars
 #define DISP_LEN 50
@@ -46,24 +45,6 @@ char outstr[DISP_LEN+1];
 char instr[DISP_LEN+1];
 char statstr[DISP_LEN+1];
 char titlestr[DISP_LEN+1];
-
-//int bar_pos;
-//unsigned long bar_count;
-
-//void do_backgrounds()
-//{
-//   bar_pos=0;
-//   bar_count = millis();
-//}
-
-//  void display_bar()
-//  {
-//     if (millis() - bar_count > 400) {
-//        bar_count = millis();
-//        bar_pos ++;
-//        bar_pos %= 10;
-//     }
-//  }
 
 void display_val(float val)
 {
@@ -75,9 +56,7 @@ void display_val(float val)
   Serial.println(dist);
 
   // oled
-//  oled.drawRect(13, 16, 102, 4);
-//  oled.fillRect(14, 17, dist, 2);
-  oled.drawProgressBar(15, 16, 100, 4, dist);
+  oled.drawProgressBar(15, 16, 100, 5, dist);
   oled.display();
 }
 
@@ -104,8 +83,6 @@ void display_str()
   oled.drawString(64, 50, statstr);
   oled.display();
 }
-
-
 
 // ------------------------------------------------------------------------------------------
 // Bluetooth routines
@@ -284,9 +261,6 @@ void loop() {
    int ret;
    int ct;
    
-//
-//   display_bar();
-   
    // this will connect if not already connected
    if (!connected) connect_to_spark();
 
@@ -308,6 +282,7 @@ void loop() {
             sub_cmd = scr.messages[i].sub_cmd;
 
             if (cmd == 0x03 && sub_cmd == 0x01) {
+              scr.dump();
                ret = scr.get_preset(i, &preset);
                Serial.println("Get preset");
                Serial.println(ret);
