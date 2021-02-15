@@ -1,12 +1,21 @@
 //#include "heltec.h"
+#include "SSD1306Wire.h" // https://github.com/ThingPulse/esp8266-oled-ssd1306
+
 #include "SparkClass.h"
 #include "SparkPresets.h"
 
 #include "BluetoothSerial.h" // https://github.com/espressif/arduino-esp32
 
+// Device Info Definitions
+const String DEVICE_NAME = "TinderBox";
+const String VERSION = "0.3.1";
+
 // Bluetooth vars
 #define SPARK_NAME "Spark 40 Audio"
 #define MY_NAME    "MIDI Spark"
+
+// OLED Screen Definitions (SH1106 driven screen can be used in place of a SSD1306 screen, if desired)
+SSD1306Wire oled(0x3c, SDA, SCL); // ADDRESS, SDA, SCL 
 
 #define BACKGROUND TFT_BLACK
 #define TEXT_COLOUR TFT_WHITE
@@ -82,7 +91,13 @@ void display_val(float val)
 //   Heltec.display -> display();   
    Serial.println("Progress bar: ");
    Serial.println(dist);
+   
+//  oled.setFont(ArialMT_Plain_10);
+//  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+//  oled.drawString(64, 60, String(dist));
 
+  oled.drawRect(8, 58, 102, 6);
+  oled.fillRect(9, 59, dist, 4);
 }
 
 void display_str()
@@ -98,6 +113,24 @@ Serial.println(outstr);
 //   Heltec.display -> drawString(0, STATUS, statstr);  
 Serial.println(statstr); 
 //   Heltec.display -> display();
+
+
+ // oled version
+  oled.clear();
+  oled.setFont(ArialMT_Plain_10);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 1, titlestr);
+  oled.setFont(ArialMT_Plain_10);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 15, instr);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 30,  outstr);
+  oled.setFont(ArialMT_Plain_10);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 45, statstr);
+  oled.display();
+  
+  delay(4000);
 }
 
 
@@ -244,6 +277,21 @@ void setup() {
 //   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
    Serial.begin(115200);
 
+  // Initialize device OLED display, and flip screen, as OLED library starts "upside-down" (for some reason?)
+  oled.init();
+  oled.flipScreenVertically();
+  
+  // Show "TinderBox ESP v<version_num>" message on device screen
+  oled.clear();
+  oled.setFont(ArialMT_Plain_24);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 12, DEVICE_NAME);
+  oled.setFont(ArialMT_Plain_16);
+  oled.setTextAlignment(TEXT_ALIGN_CENTER);
+  oled.drawString(64, 36, "ESP32 v" + VERSION);
+  oled.display();
+  delay(4000);
+  
    strncpy(statstr,  "Started", 25);
    strncpy(outstr,   "Nothing out", 25);
    strncpy(instr,    "Nothing in", 25);
