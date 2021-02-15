@@ -336,10 +336,10 @@ void loop() {
                   send_preset_request(0x7f);
                }
             }
-//            else {
-//               snprintf(instr, DISP_LEN-1, "Command %2X %2X", scr.messages[i].cmd, scr.messages[i].sub_cmd);
+            else {
+               snprintf(instr, DISP_LEN-1, "Command %2X %2X", scr.messages[i].cmd, scr.messages[i].sub_cmd);
 
-//            }
+            }
          }
       }
    }
