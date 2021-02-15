@@ -7,12 +7,12 @@
 #include "BluetoothSerial.h" // https://github.com/espressif/arduino-esp32
 
 // Device Info Definitions
-const String DEVICE_NAME = "TinderBox";
-const String VERSION = "0.3.1";
+const String DEVICE_NAME = "Spark Pedal";
+const String VERSION = "0.1.1";
 
 // Bluetooth vars
 #define SPARK_NAME "Spark 40 Audio"
-#define MY_NAME    "MIDI Spark"
+#define MY_NAME    "Spark Pedal"
 
 // OLED Screen Definitions (SH1106 driven screen can be used in place of a SSD1306 screen, if desired)
 SSD1306Wire oled(0x3c, SDA, SCL); // ADDRESS, SDA, SCL 
@@ -96,8 +96,10 @@ void display_val(float val)
 //  oled.setTextAlignment(TEXT_ALIGN_CENTER);
 //  oled.drawString(64, 60, String(dist));
 
-  oled.drawRect(8, 58, 102, 6);
-  oled.fillRect(9, 59, dist, 4);
+  oled.drawRect(13, 58, 102, 6);
+  oled.fillRect(14, 59, dist, 4);
+  oled.display();
+  
 }
 
 void display_str()
@@ -130,7 +132,6 @@ Serial.println(statstr);
   oled.drawString(64, 45, statstr);
   oled.display();
   
-  delay(4000);
 }
 
 
