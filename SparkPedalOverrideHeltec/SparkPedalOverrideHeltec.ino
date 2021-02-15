@@ -1,4 +1,4 @@
-#include "heltec.h"
+//#include "heltec.h"
 #include "SparkClass.h"
 #include "SparkPresets.h"
 
@@ -77,19 +77,27 @@ void display_val(float val)
    Heltec.display -> drawRect(dist, 45, 100-dist, 5);   
    Heltec.display -> display();
 */
-   Heltec.display -> setColor(WHITE);
-   Heltec.display -> drawProgressBar(5, 45, 120, 5, dist);
-   Heltec.display -> display();   
+//   Heltec.display -> setColor(WHITE);
+//   Heltec.display -> drawProgressBar(5, 45, 120, 5, dist);
+//   Heltec.display -> display();   
+   Serial.println("Progress bar: ");
+   Serial.println(dist);
+
 }
 
 void display_str()
 {
-   Heltec.display -> clear();
-   Heltec.display -> drawString(0, TITLE,  titlestr);
-   Heltec.display -> drawString(0, IN,     instr);
-   Heltec.display -> drawString(0, OUT,    outstr);
-   Heltec.display -> drawString(0, STATUS, statstr);   
-   Heltec.display -> display();
+  Serial.println("DISPLAY STRING ROUTINE");
+//  Heltec.display -> clear();
+//   Heltec.display -> drawString(0, TITLE,  titlestr);
+Serial.println(titlestr);
+//   Heltec.display -> drawString(0, IN,     instr);
+Serial.println(instr);
+//   Heltec.display -> drawString(0, OUT,    outstr);
+Serial.println(outstr);
+//   Heltec.display -> drawString(0, STATUS, statstr);  
+Serial.println(statstr); 
+//   Heltec.display -> display();
 }
 
 
@@ -233,7 +241,8 @@ unsigned long keep_alive;
 
 
 void setup() {
-   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
+//   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
+   Serial.begin(115200);
 
    strncpy(statstr,  "Started", 25);
    strncpy(outstr,   "Nothing out", 25);
@@ -283,6 +292,7 @@ void loop() {
                ret = scr.get_preset(i, &preset);
                Serial.println("Get preset");
                Serial.println(ret);
+               Serial.println(preset.Name);
                if (ret >= 0){
                   snprintf(instr, DISP_LEN-1, "Preset: %s", preset.Name);
                   display_str();
@@ -323,7 +333,7 @@ void loop() {
                   snprintf(outstr, DISP_LEN-1, "Preset: %s", presets[pres]->Name);
                   display_str();
 
-//                  send_preset_request(0x7f);
+                  send_preset_request(0x7f);
                }
             }
 //            else {
