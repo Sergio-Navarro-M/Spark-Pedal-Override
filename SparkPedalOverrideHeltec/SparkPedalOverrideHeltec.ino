@@ -30,14 +30,12 @@ SSD1306Wire oled(0x3c, SDA, SCL); // ADDRESS, SDA, SCL
 
 BluetoothSerial SerialBT;
 
-
 // Spark vars
 SparkClass sc1, sc2, sc3, sc4, scr, scrp;
 SparkClass sc_setpreset7f;
 SparkClass sc_getserial;
 
 SparkPreset preset;
-
 
 // ------------------------------------------------------------------------------------------
 // Display routintes
@@ -49,89 +47,62 @@ char instr[DISP_LEN+1];
 char statstr[DISP_LEN+1];
 char titlestr[DISP_LEN+1];
 
-int bar_pos;
-unsigned long bar_count;
+//int bar_pos;
+//unsigned long bar_count;
 
+//void do_backgrounds()
+//{
+//   bar_pos=0;
+//   bar_count = millis();
+//}
 
-void do_backgrounds()
-{
-   bar_pos=0;
-   bar_count = millis();
-   
-}
-
-void display_bar()
-{
-   if (millis() - bar_count > 400) {
-      bar_count = millis();
-//      M5.Lcd.fillRoundRect(15 + bar_pos*30, STATUS + STD_HEIGHT + 10 , 15, 15, 4, BACKGROUND);
-      bar_pos ++;
-      bar_pos %= 10;
-//      M5.Lcd.fillRoundRect(15 + bar_pos*30, STATUS + STD_HEIGHT + 10, 15, 15, 4, TEXT_COLOUR);
-   }
-}
+//  void display_bar()
+//  {
+//     if (millis() - bar_count > 400) {
+//        bar_count = millis();
+//        bar_pos ++;
+//        bar_pos %= 10;
+//     }
+//  }
 
 void display_val(float val)
 {
-   int dist;
+  int dist;
 
-   dist = uint8_t(val * 100);
-/*  
-   Heltec.display -> setColor(WHITE);
-   Heltec.display -> fillRect(0, 45, dist, 5);     
-   Heltec.display -> drawRect(dist, 45, 100-dist, 5);
-   Heltec.display -> setColor(BLACK);  
-   Heltec.display -> fillRect(dist, 45, 100-dist, 5);
-   Heltec.display -> setColor(WHITE);
-   Heltec.display -> drawRect(dist, 45, 100-dist, 5);   
-   Heltec.display -> display();
-*/
-//   Heltec.display -> setColor(WHITE);
-//   Heltec.display -> drawProgressBar(5, 45, 120, 5, dist);
-//   Heltec.display -> display();   
-   Serial.println("Progress bar: ");
-   Serial.println(dist);
-   
-//  oled.setFont(ArialMT_Plain_10);
-//  oled.setTextAlignment(TEXT_ALIGN_CENTER);
-//  oled.drawString(64, 60, String(dist));
+  dist = uint8_t(val * 100);
 
-  oled.drawRect(13, 58, 102, 6);
-  oled.fillRect(14, 59, dist, 4);
+  Serial.println("Progress bar: ");
+  Serial.println(dist);
+
+  // oled
+//  oled.drawRect(13, 16, 102, 4);
+//  oled.fillRect(14, 17, dist, 2);
+  oled.drawProgressBar(15, 16, 100, 4, dist);
   oled.display();
-  
 }
 
 void display_str()
 {
   Serial.println("DISPLAY STRING ROUTINE");
-//  Heltec.display -> clear();
-//   Heltec.display -> drawString(0, TITLE,  titlestr);
-Serial.println(titlestr);
-//   Heltec.display -> drawString(0, IN,     instr);
-Serial.println(instr);
-//   Heltec.display -> drawString(0, OUT,    outstr);
-Serial.println(outstr);
-//   Heltec.display -> drawString(0, STATUS, statstr);  
-Serial.println(statstr); 
-//   Heltec.display -> display();
+  Serial.println(titlestr);
+  Serial.println(instr);
+  Serial.println(outstr);
+  Serial.println(statstr); 
 
-
- // oled version
+  // oled
   oled.clear();
   oled.setFont(ArialMT_Plain_10);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 1, titlestr);
+  oled.drawString(64, 0, titlestr);
   oled.setFont(ArialMT_Plain_10);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 15, instr);
+  oled.drawString(64, 22, instr);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 30,  outstr);
+  oled.drawString(64, 36,  outstr);
   oled.setFont(ArialMT_Plain_10);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
-  oled.drawString(64, 45, statstr);
+  oled.drawString(64, 50, statstr);
   oled.display();
-  
 }
 
 
@@ -275,14 +246,13 @@ unsigned long keep_alive;
 
 
 void setup() {
-//   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/, true /*Serial Enable*/);
-   Serial.begin(115200);
+  Serial.begin(115200);
 
   // Initialize device OLED display, and flip screen, as OLED library starts "upside-down" (for some reason?)
   oled.init();
   oled.flipScreenVertically();
   
-  // Show "TinderBox ESP v<version_num>" message on device screen
+  // Show welcome screen
   oled.clear();
   oled.setFont(ArialMT_Plain_24);
   oled.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -314,8 +284,8 @@ void loop() {
    int ret;
    int ct;
    
-
-   display_bar();
+//
+//   display_bar();
    
    // this will connect if not already connected
    if (!connected) connect_to_spark();
