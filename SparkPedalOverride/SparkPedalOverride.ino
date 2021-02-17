@@ -56,11 +56,12 @@ void switchingPressHandler (BfButton *btn, BfButton::press_pattern_t pattern) {
     for (int i = 0; i < NUM_OF_BUTTONS; i++) {
       // Don't send a cmd to change the tone preset if it is already selected
       if (pressed_btn_gpio == BUTTON_GPI0_LIST[i] && selected_tone_preset != i + 1) {
-        selected_tone_preset = i + 1;
-        sc1.change_hardware_preset(i);
-        send_receive_bt(sc1);
-        Serial.println("Preset selected:");
-        Serial.println(String(i + 1));
+//        selected_tone_preset = i + 1;
+//        sc1.change_hardware_preset(i);
+//        send_receive_bt(sc1);
+//        Serial.println("Preset selected:");
+//        Serial.println(String(i + 1));
+          send_preset_request(i);
         //        sendLoadTonePresetCmd(LOAD_TONE_PRESET_LIST[i]);
       }
     }
@@ -360,51 +361,64 @@ void loop() {
           ret = scr.get_preset(i, &preset);
           Serial.println("Get preset");
           Serial.println(ret);
-          Serial.println(preset.Name);
-          Serial.println(preset.effects[1].EffectName);
+          Serial.println("-----------------------------");
+          Serial.print("0");
+          Serial.print(";");
+          Serial.print(preset.Name);
+          Serial.print(";");
+          Serial.print(preset.UUID);
+          Serial.print(";");
+          Serial.print(preset.Version);
+          Serial.print(";");
+          Serial.print(preset.Description);
+          Serial.print("\n");
           if (ret >= 0) {
             snprintf(instr, DISP_LEN - 1, "Preset: %s", preset.Name);
             display_str();
           }
         }
-        else if (cmd == 0x03 && sub_cmd == 0x37) {
-          ret = scr.get_effect_parameter(i, a_str, &param, &val);
-          Serial.println("Get effect params");
-          Serial.println(ret);
-          if (ret >= 0) {
-            snprintf(instr, DISP_LEN - 1, "%s %d %0.2f", a_str, param, val);
-            display_str();
-            display_val(val);
-          }
-        }
-        else if (cmd == 0x03 && sub_cmd == 0x06) {
-          // it can only be an amp change if received from the Spark
-          ret = scr.get_effect_change(i, a_str, b_str);
-          Serial.println("Get effect change");
-          Serial.println(ret);
-          if (ret >= 0) {
-
-            snprintf(instr, DISP_LEN - 1, "-> %s", b_str);
-            display_str();
-
-            if      (!strncmp(b_str, "FatAcousticV2", STR_LEN - 1)) pres = 16;
-            else if (!strncmp(b_str, "GK800", STR_LEN - 1)) pres = 17;
-            else if (!strncmp(b_str, "Twin", STR_LEN - 1)) pres = 3;
-            else if (!strncmp(b_str, "TwoStoneSP50", STR_LEN - 1)) pres = 12;
-            else if (!strncmp(b_str, "OverDrivenJM45", STR_LEN - 1)) pres = 5;
-            else if (!strncmp(b_str, "AmericanHighGain", STR_LEN - 1)) pres = 22;
-            else if (!strncmp(b_str, "EVH", STR_LEN - 1)) pres = 7;
-
-            sc2.create_preset(*presets[pres]);
-            send_receive_bt(sc2);
-            send_receive_bt(sc_setpreset7f);
-
-            snprintf(outstr, DISP_LEN - 1, "Preset: %s", presets[pres]->Name);
-            display_str();
-
-            //                  send_preset_request(0x7f);
-          }
-        }
+        
+        //Effect parameter changes
+//        else if (cmd == 0x03 && sub_cmd == 0x37) {
+//          ret = scr.get_effect_parameter(i, a_str, &param, &val);
+//          Serial.println("Get effect params");
+//          Serial.println(ret);
+//          if (ret >= 0) {
+//            snprintf(instr, DISP_LEN - 1, "%s %d %0.2f", a_str, param, val);
+//            display_str();
+//            display_val(val);
+//          }
+//        }
+        
+        //Presets are loaded based on amp changes
+//        else if (cmd == 0x03 && sub_cmd == 0x06) {
+//          // it can only be an amp change if received from the Spark
+//          ret = scr.get_effect_change(i, a_str, b_str);
+//          Serial.println("Get effect change");
+//          Serial.println(ret);
+//          if (ret >= 0) {
+//
+//            snprintf(instr, DISP_LEN - 1, "-> %s", b_str);
+//            display_str();
+//
+//            if      (!strncmp(b_str, "FatAcousticV2", STR_LEN - 1)) pres = 16;
+//            else if (!strncmp(b_str, "GK800", STR_LEN - 1)) pres = 17;
+//            else if (!strncmp(b_str, "Twin", STR_LEN - 1)) pres = 3;
+//            else if (!strncmp(b_str, "TwoStoneSP50", STR_LEN - 1)) pres = 12;
+//            else if (!strncmp(b_str, "OverDrivenJM45", STR_LEN - 1)) pres = 5;
+//            else if (!strncmp(b_str, "AmericanHighGain", STR_LEN - 1)) pres = 22;
+//            else if (!strncmp(b_str, "EVH", STR_LEN - 1)) pres = 7;
+//
+//            sc2.create_preset(*presets[pres]);
+//            send_receive_bt(sc2);
+//            send_receive_bt(sc_setpreset7f);
+//
+//            snprintf(outstr, DISP_LEN - 1, "Preset: %s", presets[pres]->Name);
+//            display_str();
+//
+//            //                  send_preset_request(0x7f);
+//          }
+//        }
         else {
           snprintf(instr, DISP_LEN - 1, "Command %2X %2X", scr.messages[i].cmd, scr.messages[i].sub_cmd);
 
